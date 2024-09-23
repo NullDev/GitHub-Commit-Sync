@@ -1,0 +1,41 @@
+{
+  "name": "github-commit-sync",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sync commits of two GitHub accounts to one",
+  "main": "src/app.js",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start:dev": "npm run lint && cross-env NODE_ENV=development node src/app.js",
+    "start:prod": "cross-env NODE_ENV=production node src/app.js",
+    "start": "npm run start:dev",
+    "generate-config": "node scripts/generate-config.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NullDev/GitHub-Commit-Sync.git"
+  },
+  "author": "NullDev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/NullDev/GitHub-Commit-Sync/issues"
+  },
+  "homepage": "https://github.com/NullDev/GitHub-Commit-Sync#readme",
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/eslint-parser": "^7.25.1",
+    "@types/node": "^22.5.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.11.0"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "octokit": "^4.0.2",
+    "simple-git": "^3.27.0"
+  }
+}
