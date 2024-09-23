@@ -132,7 +132,7 @@ for (const repo of filteredRepos){
                 GIT_COMMITTER_DATE: issueOrPr.created_at || new Date().toISOString(),
             };
 
-            const message = `Sync PR: ${number} - ${issueOrPr.title}`;
+            const message = `Sync PR: ${number}`;
             execSync(`git commit --no-gpg-sign -m "${message}"`, {
                 cwd: "./local_repo",
                 env,
