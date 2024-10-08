@@ -40,7 +40,7 @@ for (const repo of filteredRepos){
     Log.info(`Processing repository: ${repo.full_name}`);
 
     if (!fs.existsSync("./local_repo")){
-        Log.info("Cloning the primary repository...");
+        Log.warn("Cloning the primary repository...");
         await simpleGit().clone(
             `https://${config.auth.main_account_token}@github.com/${config.sync_repo_owner}/${config.sync_repo_name}.git`,
             "./local_repo",
@@ -64,7 +64,7 @@ for (const repo of filteredRepos){
         const { sha } = commit;
 
         if (processedShas.includes(sha)){
-            Log.info(`Skipping already processed commit: ${sha}`);
+            Log.warn(`Skipping already processed commit: ${sha}`);
             continue;
         }
 
@@ -91,7 +91,7 @@ for (const repo of filteredRepos){
             env,
         });
 
-        Log.info(`Processed ${commitType}: ${sha}`);
+        Log.done(`Processed ${commitType}: ${sha}`);
 
         commitsMade = true;
         processedShas.push(sha);
@@ -114,7 +114,7 @@ for (const repo of filteredRepos){
 
         if (isPR){
             if (processedPrs.includes(number)){
-                Log.info(`Skipping already processed PR: ${number}`);
+                Log.warn(`Skipping already processed PR: ${number}`);
                 continue;
             }
 
@@ -138,7 +138,7 @@ for (const repo of filteredRepos){
                 env,
             });
 
-            Log.info(`Processed PR: ${number}`);
+            Log.done(`Processed PR: ${number}`);
 
             commitsMade = true;
             processedPrs.push(number);
