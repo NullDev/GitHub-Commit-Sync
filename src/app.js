@@ -15,12 +15,12 @@ const octokitSecondary = new Octokit({ auth: config.auth.secondary_account_token
 const { data: secondaryUser } = await octokitSecondary.rest.users.getAuthenticated();
 const secondaryUsername = secondaryUser.login;
 
-let processedItems = /** @type {{ shas: String[], prs: Number[], issues: Number[] }} */ ({ shas: [], prs: [], issues: [] });
+let processedItems = /** @type {{ shas: String[], prs: Number[], issues: Number[], branches: String[] }} */ ({ shas: [], prs: [], issues: [], branches: [] });
 if (fs.existsSync("./processed_shas.json")){
     processedItems = JSON.parse(fs.readFileSync("./processed_shas.json", "utf8"));
 }
 
-const { shas: processedShas, prs: processedPrs, issues: processedIssues } = processedItems;
+const { shas: processedShas, prs: processedPrs, issues: processedIssues, branches: processedBranches } = processedItems;
 
 const repos = await octokitSecondary.paginate(
     octokitSecondary.rest.repos.listForAuthenticatedUser,
@@ -50,17 +50,56 @@ for (const repo of filteredRepos){
     const git = simpleGit("./local_repo");
     await git.pull();
 
-    const commits = await octokitSecondary.paginate(
-        octokitSecondary.rest.repos.listCommits,
+    let branches = await octokitSecondary.paginate(
+        octokitSecondary.rest.repos.listBranches,
         {
             owner: repo.owner.login,
             repo: repo.name,
-            author: secondaryUsername,
             per_page: 100,
         },
     );
 
-    for (const commit of commits){
+    if (config.branch_filters.length > 0){
+        branches = branches.filter((branch) => config.branch_filters.some((filter) => branch.name.toLowerCase().includes(filter)));
+    }
+
+    let allCommits = [];
+
+    for (const branch of branches){
+        if (processedBranches.includes(branch.name)){
+            Log.warn(`Skipping already processed branch: ${branch.name}`);
+            continue;
+        }
+
+        Log.info(`Collecting commits from branch: ${branch.name} in repository: ${repo.full_name}`);
+
+        const commits = await octokitSecondary.paginate(
+            octokitSecondary.rest.repos.listCommits,
+            {
+                owner: repo.owner.login,
+                repo: repo.name,
+                author: secondaryUsername,
+                per_page: 100,
+                sha: branch.name,
+            },
+        );
+
+        allCommits = allCommits.concat(commits);
+
+        processedBranches.push(branch.name);
+    }
+
+    const uniqueCommits = allCommits.reduce((acc, commit) => {
+        if (!acc.find(c => c.sha === commit.sha)){
+            acc.push(commit);
+        }
+        return acc;
+    }, []);
+
+    // @ts-ignore
+    uniqueCommits.sort((a, b) => new Date(a.commit.committer.date) - new Date(b.commit.committer.date));
+
+    for (const commit of uniqueCommits){
         const { sha } = commit;
 
         if (processedShas.includes(sha)){
@@ -188,6 +227,7 @@ if (commitsMade){
                 shas: processedShas,
                 prs: processedPrs,
                 issues: processedIssues,
+                branches: processedBranches,
             },
             null,
             2,

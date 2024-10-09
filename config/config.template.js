@@ -9,5 +9,6 @@ export default {
         name: "Your Name",
         email: "your-email@example.com",
     },
+    branch_filters: [],
     repos_to_exclude: [],
 };
