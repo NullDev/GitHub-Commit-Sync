@@ -86,7 +86,10 @@ for (const repo of filteredRepos){
 
         allCommits = allCommits.concat(commits);
 
-        processedBranches.push(branch.name);
+        if (
+            branch.name.toLowerCase() !== "master"
+            && branch.name.toLowerCase() !== "main"
+        ) processedBranches.push(branch.name);
     }
 
     const uniqueCommits = allCommits.reduce((acc, commit) => {
