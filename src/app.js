@@ -238,5 +238,8 @@ if (commitsMade){
     );
 }
 
+Log.info(`Total commits processed: ${processedShas.length}`);
+Log.info(`Total PRs processed: ${processedPrs.length}`);
+
 Log.done("All commits have been processed.");
 process.exit(0);
