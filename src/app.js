@@ -35,6 +35,8 @@ const reposToExclude = config.repos_to_exclude || [];
 const filteredRepos = repos.filter((repo) => !reposToExclude.includes(repo.name));
 
 let commitsMade = false;
+let countCommits = 0;
+let countPRs = 0;
 
 for (const repo of filteredRepos){
     Log.info(`Processing repository: ${repo.full_name}`);
@@ -134,6 +136,7 @@ for (const repo of filteredRepos){
         });
 
         Log.done(`Processed ${commitType}: ${sha}`);
+        countCommits++;
 
         commitsMade = true;
         processedShas.push(sha);
@@ -181,6 +184,7 @@ for (const repo of filteredRepos){
             });
 
             Log.done(`Processed PR: ${number}`);
+            countPRs++;
 
             commitsMade = true;
             processedPrs.push(number);
@@ -238,8 +242,8 @@ if (commitsMade){
     );
 }
 
-Log.info(`Total commits processed: ${processedShas.length}`);
-Log.info(`Total PRs processed: ${processedPrs.length}`);
+Log.info(`Total commits processed: ${countCommits}`);
+Log.info(`Total PRs processed: ${countPRs}`);
 
 Log.done("All commits have been processed.");
 process.exit(0);
