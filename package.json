@@ -27,8 +27,8 @@
   },
   "homepage": "https://github.com/NullDev/GitHub-Commit-Sync#readme",
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/eslint-parser": "^7.25.1",
+    "@babel/core": "^8.0.1",
+    "@babel/eslint-parser": "^8.0.1",
     "@types/node": "^22.5.5",
     "cross-env": "^7.0.3",
     "eslint": "^9.11.0"
